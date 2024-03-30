@@ -1,0 +1,3 @@
+export AWS_PROFILE=anax015obs
+helm package ./charts/common
+helm s3 push ./common-0.1.0.tgz anax015obs --force
