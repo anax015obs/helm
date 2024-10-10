@@ -19,6 +19,12 @@ spec:
         app: {{ template "helper.name" . }}
         release: {{ .Release.Name }}
     spec:
+      {{- if .Values.existingClaim }}
+      volumes:
+      - name: {{ .Values.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.existingClaim }}
+      {{- end }}
       imagePullSecrets:
         - name: {{ .Values.image.existingSecret }}
       containers:
@@ -28,6 +34,11 @@ spec:
             {{- with .Values.securityContext }}
             {{ toYaml . | indent 12 }}
             {{- end }}
+          {{- end }}
+          {{- if .Values.existingClaim }}
+          volumeMounts:
+          - name: {{ .Values.existingClaim }}
+            mountPath: {{ .Values.volumeMountPath }}
           {{- end }}
           image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}@{{ .Values.image.digest }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
